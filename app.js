@@ -16,6 +16,7 @@ mongoose.connect(
   }
 );
 
+app.use(express.json());
 app.use("/todoList", taskRouter);
 
 app.listen(
