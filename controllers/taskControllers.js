@@ -2,9 +2,8 @@ const mongoose = require("mongoose");
 const TaskSchema = require("../models/taskModel");
 
 const getAllTasks = (req, res, next) => {
-  TaskSchema.find({})
+  TaskSchema.find(req.query)
     .then((data) => {
-      console.log("Data sent");
       res.send(data);
     })
     .catch((err) => {
@@ -25,7 +24,18 @@ const createTask = (req, res, next) => {
   res.send(`New Task Created : ${req.body.taskName}`);
 };
 
+const deleteTask = (req, res, next) => {
+  TaskSchema.findOneAndDelete({ taskId: req.params.id })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 module.exports = {
   getAllTasks,
   createTask,
+  deleteTask,
 };
