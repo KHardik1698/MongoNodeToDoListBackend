@@ -46,7 +46,7 @@ const deleteTask = (req, res, next) => {
 const updateTask = (req, res, next) => {
   TaskSchema.findByIdAndUpdate(
     req.params.id,
-    { status: "Completed" },
+    { status: req.body.status, startedAt: Date.now(), completedAt: Date.now() },
     { useFindAndModify: false, new: true }
   )
     .then((data) => {
