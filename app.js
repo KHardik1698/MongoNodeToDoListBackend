@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const taskRouter = require("./routes/taskRoutes");
 dotenv.config({ path: "./config.env" });
 const app = express();
 
@@ -14,6 +15,8 @@ mongoose.connect(
     console.log("Connection to the Database was Successful.");
   }
 );
+
+app.use("/todoList", taskRouter);
 
 app.listen(
   process.env.PORT,
