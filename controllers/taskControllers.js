@@ -11,6 +11,16 @@ const getAllTasks = (req, res, next) => {
     });
 };
 
+const getTaskById = (req, res, next) => {
+  TaskSchema.findById(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 const createTask = (req, res, next) => {
   let newTask = new TaskSchema({ taskName: req.body.taskName });
   newTask
@@ -50,6 +60,7 @@ const updateTask = (req, res, next) => {
 
 module.exports = {
   getAllTasks,
+  getTaskById,
   createTask,
   deleteTask,
   updateTask,
