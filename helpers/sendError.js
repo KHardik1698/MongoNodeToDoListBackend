@@ -1,5 +1,5 @@
 const sendErrorMessage = (error, req, res) => {
-  res.statusCode(error.statusCode).json({
+  res.status(error.statusCode).json({
     status: error.status,
     message: error.message,
   });
