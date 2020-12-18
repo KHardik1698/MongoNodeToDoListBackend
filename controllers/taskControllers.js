@@ -2,13 +2,20 @@ const mongoose = require("mongoose");
 const TaskSchema = require("../models/taskModel");
 
 const getAllTasks = (req, res, next) => {
+  let select = "";
+  if (req.query.select) {
+    select = req.query.select;
+  }
+  delete req.query.select;
   TaskSchema.find(req.query)
+    .select(`-_id ${select}`)
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
       console.log(err);
     });
+  req.query.select = select;
 };
 
 const getTaskById = (req, res, next) => {
@@ -46,8 +53,8 @@ const deleteTask = (req, res, next) => {
 const updateTask = (req, res, next) => {
   TaskSchema.findByIdAndUpdate(
     req.params.id,
-    { status: req.body.status, startedAt: Date.now(), completedAt: Date.now() },
-    { useFindAndModify: false, new: true }
+    { status: req.body.status },
+    { useFindAndModify: false, new: true, runValidators: true }
   )
     .then((data) => {
       console.log(data);
