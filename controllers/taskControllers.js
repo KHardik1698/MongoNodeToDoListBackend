@@ -1,16 +1,30 @@
 const mongoose = require("mongoose");
 const TaskSchema = require("../models/taskModel");
+const sendResponse = require("../helpers/sendResponse");
+const sendErrorMessage = require("../helpers/sendError");
+const AppError = require("../helpers/appErrorClass");
 
 const getAllTasks = (req, res, next) => {
   let select = "";
   if (req.query.select) {
-    select = req.query.select;
-  }
+    req.query.select.split(" ").forEach((query) => {
+      if (!query.includes("__v")) {
+        select = select + " " + query;
+      }
+    });
+  } else select = "-__v";
   delete req.query.select;
   TaskSchema.find(req.query)
-    .select(`-_id -__v ${select}`)
+    .select(`${select} -_id`)
     .then((data) => {
-      res.send(data);
+      if (data.length !== 0)
+        sendResponse(200, "Get Blogs Data Request Successful", data, req, res);
+      else
+        sendErrorMessage(
+          new AppError(404, "Unsuccessful", "Blog Data not found"),
+          req,
+          res
+        );
     })
     .catch((err) => {
       console.log(err);
@@ -22,7 +36,14 @@ const getTaskById = (req, res, next) => {
   TaskSchema.findOne({ taskId: req.params.id })
     .select("-_id -__v")
     .then((data) => {
-      res.send(data);
+      if (data)
+        sendResponse(200, "Get Blogs Data Request Successful", data, req, res);
+      else
+        sendErrorMessage(
+          new AppError(404, "Unsuccessful", "Blog Data not found"),
+          req,
+          res
+        );
     })
     .catch((err) => {
       console.log(err);
@@ -34,13 +55,24 @@ const createTask = (req, res, next) => {
   newTask
     .save()
     .then((data) => {
-      data = data.toObject();
-      delete data._id;
-      delete data.__v;
-      res.send(data);
+      if (data.length !== 0) {
+        data = data.toObject();
+        delete data._id;
+        delete data.__v;
+        sendResponse(200, "Blog Created Successfully", data, req, res);
+      }
     })
     .catch((err) => {
       console.log(err);
+      sendErrorMessage(
+        new AppError(
+          500,
+          "Unsuccessful",
+          "Internal Server Error. Blog not Created"
+        ),
+        req,
+        res
+      );
     });
 };
 
@@ -48,7 +80,13 @@ const deleteTask = (req, res, next) => {
   TaskSchema.findOneAndDelete({ taskId: req.params.id })
     .select("-_id -__v")
     .then((data) => {
-      res.send(data);
+      if (data) sendResponse(200, "Blog Deleted Successfully", data, req, res);
+      else
+        sendErrorMessage(
+          new AppError(404, "Unsuccessful", "Blog Data not found"),
+          req,
+          res
+        );
     })
     .catch((err) => {
       console.log(err);
@@ -63,8 +101,13 @@ const updateTask = (req, res, next) => {
   )
     .select("-_id -__v")
     .then((data) => {
-      console.log(data);
-      res.send(data);
+      if (data) sendResponse(200, "Blog Updated Successfully", data, req, res);
+      else
+        sendErrorMessage(
+          new AppError(404, "Unsuccessful", "Blog Data not found"),
+          req,
+          res
+        );
     })
     .catch((err) => {
       console.log(err);
