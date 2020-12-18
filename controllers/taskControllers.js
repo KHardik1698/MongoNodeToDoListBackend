@@ -8,7 +8,7 @@ const getAllTasks = (req, res, next) => {
   }
   delete req.query.select;
   TaskSchema.find(req.query)
-    .select(`-_id ${select}`)
+    .select(`-_id -__v ${select}`)
     .then((data) => {
       res.send(data);
     })
@@ -19,7 +19,8 @@ const getAllTasks = (req, res, next) => {
 };
 
 const getTaskById = (req, res, next) => {
-  TaskSchema.findById(req.params.id)
+  TaskSchema.findOne({ taskId: req.params.id })
+    .select("-_id -__v")
     .then((data) => {
       res.send(data);
     })
@@ -33,6 +34,9 @@ const createTask = (req, res, next) => {
   newTask
     .save()
     .then((data) => {
+      data = data.toObject();
+      delete data._id;
+      delete data.__v;
       res.send(data);
     })
     .catch((err) => {
@@ -42,6 +46,7 @@ const createTask = (req, res, next) => {
 
 const deleteTask = (req, res, next) => {
   TaskSchema.findOneAndDelete({ taskId: req.params.id })
+    .select("-_id -__v")
     .then((data) => {
       res.send(data);
     })
@@ -51,11 +56,12 @@ const deleteTask = (req, res, next) => {
 };
 
 const updateTask = (req, res, next) => {
-  TaskSchema.findByIdAndUpdate(
-    req.params.id,
+  TaskSchema.findOneAndUpdate(
+    { taskId: req.params.id },
     { status: req.body.status },
     { useFindAndModify: false, new: true, runValidators: true }
   )
+    .select("-_id -__v")
     .then((data) => {
       console.log(data);
       res.send(data);
