@@ -9,10 +9,11 @@ const getAllTasks = (req, res, next) => {
   if (req.query.select) {
     req.query.select.split(" ").forEach((query) => {
       if (!query.includes("__v")) {
-        select = select + " " + query;
+        select = select + query + " ";
       }
     });
   } else select = "-__v";
+  if (select.length == 0) select = "-__v";
   delete req.query.select;
   TaskSchema.find(req.query)
     .select(`${select} -_id`)
