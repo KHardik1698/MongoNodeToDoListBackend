@@ -97,7 +97,7 @@ const deleteTask = (req, res, next) => {
 const updateTask = (req, res, next) => {
   TaskSchema.findOneAndUpdate(
     { taskId: req.params.id },
-    { status: req.body.status },
+    { status: req.body.status, startedAt: Date.now(), completedAt: Date.now() },
     { useFindAndModify: false, new: true, runValidators: true }
   )
     .select("-_id -__v")
@@ -112,6 +112,15 @@ const updateTask = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
+      sendErrorMessage(
+        new AppError(
+          500,
+          "Unsuccessful",
+          "Invalid Status. Blog status not Updated"
+        ),
+        req,
+        res
+      );
     });
 };
 
