@@ -1,6 +1,6 @@
-# ToDo List MongooDB NodeJS Backend API
+# MongoDB NodeJS ToDo List Backend API
 
-This Repository contains a Project which has the MondoDB Node Backend for ToDo List.\
+This Repository contains a Project which has the MongoDB Node Backend for ToDo List.\
 This Project is created using a Modular approach, where various functionalities are divided into various Modules.
 
 # Api End Points:
@@ -103,7 +103,7 @@ It takes the Status Code, Error Status & Message as Parameters to generate an Er
 The Validation Middleware is used to check if the Request Body is Valid or not.\
 If it's valid, then the Execution continues, otherwise it will return an Error Message.
 
-<!-- # Demo: -->
+# Demo:
 
-<!-- Live Demo of the NodeJS Blogs Backend API can be found here:\
-https://node-todoList-backend.herokuapp.com/todoList/tasks/ -->
+Live Demo of the MongoDB NodeJS ToDo List Backend API can be found here:\
+https://node-todolist-tasks-backend.herokuapp.com/todoList/tasks/
