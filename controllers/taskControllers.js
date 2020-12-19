@@ -19,16 +19,20 @@ const getAllTasks = (req, res, next) => {
     .select(`${select} -_id`)
     .then((data) => {
       if (data.length !== 0)
-        sendResponse(200, "Get Blogs Data Request Successful", data, req, res);
+        sendResponse(200, "Get Tasks Request Successful.", data, req, res);
       else
         sendErrorMessage(
-          new AppError(404, "Unsuccessful", "Blog Data not found"),
+          new AppError(404, "Unsuccessful.", "Tasks Data not found."),
           req,
           res
         );
     })
     .catch((err) => {
       console.log(err);
+      sendError(
+        new AppError(500, "Request was Unsuccessful.", "Internal Error."),
+        res
+      );
     });
   req.query.select = select;
 };
@@ -38,16 +42,30 @@ const getTaskById = (req, res, next) => {
     .select("-_id -__v")
     .then((data) => {
       if (data)
-        sendResponse(200, "Get Blogs Data Request Successful", data, req, res);
+        sendResponse(
+          200,
+          `Request for getting the Task with Id ${req.params.id} was Successful.`,
+          data,
+          req,
+          res
+        );
       else
         sendErrorMessage(
-          new AppError(404, "Unsuccessful", "Blog Data not found"),
+          new AppError(
+            404,
+            "Unsuccessful.",
+            `Task with Id ${req.params.id} does not exist.`
+          ),
           req,
           res
         );
     })
     .catch((err) => {
       console.log(err);
+      sendError(
+        new AppError(500, "Request was Unsuccessful.", "Internal Error."),
+        res
+      );
     });
 };
 
@@ -60,16 +78,21 @@ const createTask = (req, res, next) => {
         data = data.toObject();
         delete data._id;
         delete data.__v;
-        sendResponse(200, "Blog Created Successfully", data, req, res);
-      }
+        sendResponse(200, "New Task Created Successfully.", data, req, res);
+      } else
+        sendErrorMessage(
+          new AppError(404, "Unsuccessful.", "New Task was not Created."),
+          req,
+          res
+        );
     })
     .catch((err) => {
       console.log(err);
       sendErrorMessage(
         new AppError(
           500,
-          "Unsuccessful",
-          "Internal Server Error. Blog not Created"
+          "Unsuccessful.",
+          "Internal Server Error. Task not Created."
         ),
         req,
         res
@@ -81,10 +104,10 @@ const deleteTask = (req, res, next) => {
   TaskSchema.findOneAndDelete({ taskId: req.params.id })
     .select("-_id -__v")
     .then((data) => {
-      if (data) sendResponse(200, "Blog Deleted Successfully", data, req, res);
+      if (data) sendResponse(200, "Task Deleted Successfully.", data, req, res);
       else
         sendErrorMessage(
-          new AppError(404, "Unsuccessful", "Blog Data not found"),
+          new AppError(404, "Unsuccessful.", "Task Data not found."),
           req,
           res
         );
@@ -102,10 +125,21 @@ const updateTask = (req, res, next) => {
   )
     .select("-_id -__v")
     .then((data) => {
-      if (data) sendResponse(200, "Blog Updated Successfully", data, req, res);
+      if (data)
+        sendResponse(
+          200,
+          `Task with Id ${req.params.id} Updated Successfully.`,
+          data,
+          req,
+          res
+        );
       else
         sendErrorMessage(
-          new AppError(404, "Unsuccessful", "Blog Data not found"),
+          new AppError(
+            404,
+            "Unsuccessful.",
+            `Task with Id ${req.params.id} does not exist`
+          ),
           req,
           res
         );
@@ -115,8 +149,8 @@ const updateTask = (req, res, next) => {
       sendErrorMessage(
         new AppError(
           500,
-          "Unsuccessful",
-          "Invalid Status. Blog status not Updated"
+          "Unsuccessful.",
+          "Invalid Status Value or Internal Error. Task Status not Updated."
         ),
         req,
         res
