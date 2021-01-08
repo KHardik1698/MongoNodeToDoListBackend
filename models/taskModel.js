@@ -1,10 +1,8 @@
 const mongoose = require("mongoose");
-const uniqid = require("uniqid");
 
 const taskSchema = new mongoose.Schema({
   taskId: {
     type: String,
-    default: "task-" + uniqid(),
   },
   taskName: {
     type: String,

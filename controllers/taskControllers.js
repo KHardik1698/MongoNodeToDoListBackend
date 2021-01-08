@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const uniqid = require("uniqid");
 const TaskSchema = require("../models/taskModel");
 const sendResponse = require("../helpers/sendResponse");
 const sendErrorMessage = require("../helpers/sendError");
@@ -18,21 +19,12 @@ const getAllTasks = (req, res, next) => {
   TaskSchema.find(req.query)
     .select(`${select} -_id`)
     .then((data) => {
-      if (data.length !== 0)
-        sendResponse(200, "Get Tasks Request Successful.", data, req, res);
-      else
-        sendErrorMessage(
-          new AppError(404, "Unsuccessful.", "Tasks Data not found."),
-          req,
-          res
-        );
+      if (data.length !== 0) sendResponse(200, "Get Tasks Request Successful.", data, req, res);
+      else sendErrorMessage(new AppError(404, "Unsuccessful.", "Tasks Data not found."), req, res);
     })
     .catch((err) => {
       console.log(err);
-      sendError(
-        new AppError(500, "Request was Unsuccessful.", "Internal Error."),
-        res
-      );
+      sendError(new AppError(500, "Request was Unsuccessful.", "Internal Error."), res);
     });
   req.query.select = select;
 };
@@ -51,26 +43,19 @@ const getTaskById = (req, res, next) => {
         );
       else
         sendErrorMessage(
-          new AppError(
-            404,
-            "Unsuccessful.",
-            `Task with Id ${req.params.id} does not exist.`
-          ),
+          new AppError(404, "Unsuccessful.", `Task with Id ${req.params.id} does not exist.`),
           req,
           res
         );
     })
     .catch((err) => {
       console.log(err);
-      sendError(
-        new AppError(500, "Request was Unsuccessful.", "Internal Error."),
-        res
-      );
+      sendError(new AppError(500, "Request was Unsuccessful.", "Internal Error."), res);
     });
 };
 
 const createTask = (req, res, next) => {
-  let newTask = new TaskSchema({ taskName: req.body.taskName });
+  let newTask = new TaskSchema({ taskId: "task-" + uniqid(), taskName: req.body.taskName });
   newTask
     .save()
     .then((data) => {
@@ -80,20 +65,12 @@ const createTask = (req, res, next) => {
         delete data.__v;
         sendResponse(200, "New Task Created Successfully.", data, req, res);
       } else
-        sendErrorMessage(
-          new AppError(404, "Unsuccessful.", "New Task was not Created."),
-          req,
-          res
-        );
+        sendErrorMessage(new AppError(404, "Unsuccessful.", "New Task was not Created."), req, res);
     })
     .catch((err) => {
       console.log(err);
       sendErrorMessage(
-        new AppError(
-          500,
-          "Unsuccessful.",
-          "Internal Server Error. Task not Created."
-        ),
+        new AppError(500, "Unsuccessful.", "Internal Server Error. Task not Created."),
         req,
         res
       );
@@ -105,12 +82,7 @@ const deleteTask = (req, res, next) => {
     .select("-_id -__v")
     .then((data) => {
       if (data) sendResponse(200, "Task Deleted Successfully.", data, req, res);
-      else
-        sendErrorMessage(
-          new AppError(404, "Unsuccessful.", "Task Data not found."),
-          req,
-          res
-        );
+      else sendErrorMessage(new AppError(404, "Unsuccessful.", "Task Data not found."), req, res);
     })
     .catch((err) => {
       console.log(err);
@@ -126,20 +98,10 @@ const updateTask = (req, res, next) => {
     .select("-_id -__v")
     .then((data) => {
       if (data)
-        sendResponse(
-          200,
-          `Task with Id ${req.params.id} Updated Successfully.`,
-          data,
-          req,
-          res
-        );
+        sendResponse(200, `Task with Id ${req.params.id} Updated Successfully.`, data, req, res);
       else
         sendErrorMessage(
-          new AppError(
-            404,
-            "Unsuccessful.",
-            `Task with Id ${req.params.id} does not exist`
-          ),
+          new AppError(404, "Unsuccessful.", `Task with Id ${req.params.id} does not exist`),
           req,
           res
         );
